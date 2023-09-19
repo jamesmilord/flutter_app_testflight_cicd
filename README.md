@@ -659,7 +659,6 @@ TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
 APPLE_KEY_ID = ENV["APPLE_KEY_ID"]
 APPLE_ISSUER_ID = ENV["APPLE_ISSUER_ID"]
 APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
-APPLE_KEY_PATH = ENV["APPLE_KEY_PATH"]
 APP_IDENTIFIER = ENV["APP_IDENTIFIER"]
 GIT_AUTHORIZATION = ENV["GIT_AUTHORIZATION"]
 
@@ -706,10 +705,16 @@ platform :ios do
       api_key: api_key
     )
     sync_code_signing
-    disable_automatic_code_signing(path: "Runner.xcodeproj")
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "Runner.xcodeproj"
+    )
     increment_build_number(xcodeproj: "Runner.xcodeproj")
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
-    enable_automatic_code_signing(path: "Runner.xcodeproj")
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      path: "Runner.xcodeproj"
+    )
     upload_to_testflight
   end
 end
@@ -777,6 +782,150 @@ fastlane beta
 
 [07:05:48]: fastlane.tools just saved you 7 minutes! 🎉
 ```
+
+And the app should be in testflight ready to be downloaded by your testers (you will need to add their email to a group first)
+
+![testflight1](./screenshots/testflight1.png)
+
+
+3. **Github workflow**
+
+add the following in a workflow file
+
+```
+name: Appstore Deployment
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+ deploy_ios:
+    name: Deploy build to TestFlight
+    runs-on: macOS-latest
+    steps:
+      - name: Checkout code from ref
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_REPO_KEY }}
+
+      - name: Run Flutter tasks
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.4'
+      - run: flutter clean
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign --no-tree-shake-icons
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+          working-directory: 'ios'
+
+      - name: Deploy iOS Beta to TestFlight via Fastlane
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: beta
+          subdirectory: ios
+        env:
+          TEMP_KEYCHAIN_USER: ${{ secrets.TEMP_KEYCHAIN_USER }}
+          TEMP_KEYCHAIN_PASSWORD: ${{ secrets.TEMP_KEYCHAIN_PASSWORD }}
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
+          GIT_AUTHORIZATION: ${{ secrets.GIT_AUTHORIZATION }}
+          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
+          DEV_PORTAL_TEAM_ID: ${{ secrets.DEV_PORTAL_TEAM_ID }}
+          GIT_CERTS_URL: ${{ secrets.GIT_CERTS_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+```
+
+since developing/pushing to the app store on our local machine is different from doing it on github machines we need to make some small changes. First you will notice the 
+
+```
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_REPO_KEY }}
+```
+
+we need to generate a key-pair and add the public key as deploy on the `certificates` repo (make sure to give it read/write access)
+
+then we need to pass the private key as the `MATCH_REPO_KEY` secret.
+
+we also need to change the value for `GIT_CERTS_URL` to be the ssh value instead of https (ex: git@github.com:jamesmilord/certificates.git)
+
+Another important thing is we were developing on a local mac computer. If we look inside our Gemfile.lock in the `/ios` folder we will see 
+
+```
+PLATFORMS
+  arm64-darwin-22
+```
+
+that's the local machine we need to make sure we add whatever machine that we are using in github action so in this case `x86_64-darwin-20`
+
+we can use this command
+`bundle lock --add-platform x86_64-darwin-20`
+
+we should see our Gemfile.lock file updated to this 
+
+```
+PLATFORMS
+  arm64-darwin-22
+  x86_64-darwin-20
+```
+
+then lets push to github.
+
+Voila!!!
+
+```
+[12:13:56]: Waiting for App Store Connect to finish processing the new build (0.1.0 - 4) for IOS
+[12:14:28]: Successfully finished processing the build 0.1.0 - 4 for IOS
+[12:14:28]: Using App Store Connect's default for notifying external ***ers (which is true) - set `notify_external_***ers` for full control
+[12:14:28]: Distributing new build to ***ers: 0.1.0 - 4
+[12:14:29]: Export compliance has been set to 'false'. Need to wait for build to finishing processing again...
+[12:14:29]: Set 'ITSAppUsesNonExemptEncryption' in the 'Info.plist' to skip this step and speed up the submission
+[12:14:30]: Successfully distributed build to Internal ***ers 🚀
+
++------------------------------------------------+
+|                fastlane summary                |
++------+---------------------------+-------------+
+| Step | Action                    | Time (in s) |
++------+---------------------------+-------------+
+| 1    | default_platform          | 0           |
+| 2    | create_keychain           | 0           |
+| 3    | app_store_connect_api_key | 0           |
+| 4    | match                     | 3           |
+| 5    | sync_code_signing         | 4           |
+| 6    | automatic_code_signing    | 0           |
+| 7    | increment_build_number    | 4           |
+| 8    | build_app                 | 92          |
+| 9    | automatic_code_signing    | 0           |
+| 10   | upload_to_***flight      | 442         |
++------+---------------------------+-------------+
+
+[12:14:30]: fastlane.tools just saved you 9 minutes! 🎉
+```
+
+see the build number 4 
+
+![newbuild](./screenshots/newbuild.png)
+
+
+
+
+
+
 
 
 
