@@ -401,6 +401,10 @@ y
 
 Finally, Fastlane will generate two files for you — an Appfile and a Fastfile in a folder called `/fastlane` — which you can modify to suit your specific deployment needs.
 
+If you visit the https://appstoreconnect.apple.com/apps you should see
+
+![app](./screenshots/appstoreconnect.png)
+
 Now since we don t want to accidently push some sensitive values such as keys/token to our version control lets create a `.env` file in the `/ios` folder and add it to gitignore.
 
 Let start with our `Appfile`
@@ -541,6 +545,110 @@ DEV_PORTAL_TEAM_ID=aaaaaaaaa12
 GIT_CERTS_URL="https://github.com/jamesmilord/certificates.git"
 ```
 
+Now we need to generate the certificate for our app
+
+let run 
+
+```
+fastlane match appstore
+```
+
+you should see the following 
+
+```
+fastlane beta
+[✔] 🚀 
+[06:36:12]: ------------------------------
+[06:36:12]: --- Step: default_platform ---
+[06:36:12]: ------------------------------
+[06:36:12]: Driving the lane 'ios beta' 🚀
+[06:36:12]: -----------------------------
+[06:36:12]: --- Step: delete_keychain ---
+[06:36:12]: -----------------------------
+[06:36:12]: -----------------------------
+[06:36:12]: --- Step: create_keychain ---
+[06:36:12]: -----------------------------
+[06:36:12]: $ security list-keychains -d user
+[06:36:12]: ▸ "/Users/jamesmilord/Library/Keychains/login.keychain-db"
+[06:36:12]: ▸ "/Users/jamesmilord/Library/Keychains/tempuser-db"
+[06:36:12]: ---------------------------------------
+[06:36:12]: --- Step: app_store_connect_api_key ---
+[06:36:12]: ---------------------------------------
+[06:36:12]: -------------------
+[06:36:12]: --- Step: match ---
+[06:36:12]: -------------------
+[06:36:12]: Successfully loaded '/Users/jamesmilord/projects/flutter/flutter_app_testflight_cicd/ios/fastlane/Matchfile' 📄
+
++----------------------------------------------------------------+
+|          Detected Values from './fastlane/Matchfile'           |
++--------------+-------------------------------------------------+
+| git_url      | https://github.com/jamesmilord/certificates.git |
+| storage_mode | git                                             |
+| type         | appstore                                        |
++--------------+-------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------+
+|                                Summary for match 2.215.1                                 |
++----------------------------------------+-------------------------------------------------+
+| type                                   | appstore                                        |
+| app_identifier                         | ["com.jamesmilord.flutterapptestflightcicd"]    |
+| git_basic_authorization                | ********                                        |
+| readonly                               | true                                            |
+| keychain_name                          | test                                            |
+| keychain_password                      | ********                                        |
+| api_key                                | ********                                        |
+| generate_apple_certs                   | true                                            |
+| skip_provisioning_profiles             | false                                           |
+| team_id                                | 6BP9B2UJQ6                                      |
+| storage_mode                           | git                                             |
+| git_url                                | https://github.com/jamesmilord/certificates.git |
+| git_branch                             | master                                          |
+| shallow_clone                          | false                                           |
+| clone_branch_directly                  | false                                           |
+| skip_google_cloud_account_confirmation | false                                           |
+| s3_skip_encryption                     | false                                           |
+| gitlab_host                            | https://gitlab.com                              |
+| force                                  | false                                           |
+| force_for_new_devices                  | false                                           |
+| include_mac_in_profiles                | false                                           |
+| include_all_certificates               | false                                           |
+| force_for_new_certificates             | false                                           |
+| skip_confirmation                      | false                                           |
+| safe_remove_certs                      | false                                           |
+| skip_docs                              | false                                           |
+| platform                               | ios                                             |
+| derive_catalyst_app_identifier         | false                                           |
+| fail_on_name_taken                     | false                                           |
+| skip_certificate_matching              | false                                           |
+| skip_set_partition_list                | false                                           |
+| verbose                                | false                                           |
++----------------------------------------+-------------------------------------------------+
+
+[06:36:12]: Cloning remote git repo...
+[06:36:12]: If cloning the repo takes too long, you can use the `clone_branch_directly` option in match.
+[06:36:12]: Checking out branch master...
+[06:36:12]: 🔓  Successfully decrypted certificates repo
+[06:36:12]: Installing certificate...
+[06:36:12]: $ security find-certificate -a -c 'Apple Worldwide Developer Relations' -p /Users/jamesmilord/Library/Keychains/login.keychain-db
+[06:36:12]: ▸ --
+.
+.
+.
+[06:36:13]: All required keys, certificates and provisioning profiles are installed 🙌
+[06:36:13]: Setting Provisioning Profile type to 'app-store'
+[06:36:13]: -------------------------------
+[06:36:13]: --- Step: sync_code_signing ---
+[06:36:13]: -------------------------------
+[06:36:13]: Successfully loaded '/Users/jamesmilord/projects/flutter/flutter_app_testflight_cicd/ios/fastlane/Matchfile' 📄
+```
+
+you should see a new certificate for your app on the certificate repo
+
+![certs](./screenshots/certificates.png)
+
+
+
 Now lets copy the following to our `Fastfile`, I will explain the content of this file later.
 
 ```
@@ -621,6 +729,54 @@ GIT_AUTHORIZATION you ll need to create a token to allow repo access for your us
 The keychain methods after that ensure a temp keychain in created.
 
 The code within `platform :ios` is the beta lane. it will push the app to testflight upon succesful completion of all steps.
+
+
+3. **Xcode setup**
+
+Now we need to make some change on xcode side of thing. Open the ios folder in xcode (right click + open in xcode)
+
+make sure you set a version and build number (I started mine at 1) you won t have to do this every single time as it will auto update for you.
+
+![version](./screenshots/version.png)
+
+then switch to the signing & capabilities tab then uncheck the auto signing, make sure to select the right bundle indentifier, the right provisioning profile which should be popuplated and the right team.
+
+![signing](./screenshots/signing.png)
+
+3. **Deploy To testflight locally**
+we need to test our deployment, we will do it locally first
+
+run 
+
+```
+fastlane beta
+```
+ 
+🤞 if everything is ok you should see this output
+
+```
+[07:05:48]: Successfully distributed build to Internal testers 🚀
+
++------------------------------------------------+
+|                fastlane summary                |
++------+---------------------------+-------------+
+| Step | Action                    | Time (in s) |
++------+---------------------------+-------------+
+| 1    | default_platform          | 0           |
+| 2    | delete_keychain           | 0           |
+| 3    | create_keychain           | 0           |
+| 4    | app_store_connect_api_key | 0           |
+| 5    | match                     | 0           |
+| 6    | sync_code_signing         | 2           |
+| 7    | automatic_code_signing    | 0           |
+| 8    | increment_build_number    | 1           |
+| 9    | build_app                 | 38          |
+| 10   | automatic_code_signing    | 0           |
+| 11   | upload_to_testflight      | 364         |
++------+---------------------------+-------------+
+
+[07:05:48]: fastlane.tools just saved you 7 minutes! 🎉
+```
 
 
 

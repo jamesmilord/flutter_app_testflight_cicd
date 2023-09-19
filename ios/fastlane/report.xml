@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000617">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="01: delete_keychain" time="0.0174">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="02: create_keychain" time="0.058162">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="03: app_store_connect_api_key" time="0.003463">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="04: match" time="0.808927">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="05: sync_code_signing" time="2.077271">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="06: automatic_code_signing" time="0.044788">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="07: increment_build_number" time="1.647879">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="08: build_app" time="38.708385">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="09: automatic_code_signing" time="0.008611">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="10: upload_to_testflight" time="364.999819">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>
