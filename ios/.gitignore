@@ -37,3 +37,5 @@ Runner/GeneratedPluginRegistrant.*
 
 *.ipa
 *.dSYM.zip
+deploy_key
+*.pub
