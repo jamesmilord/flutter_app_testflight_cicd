@@ -744,7 +744,7 @@ make sure you set a version and build number (I started mine at 1) you won t hav
 
 ![version](./screenshots/version.png)
 
-then switch to the signing & capabilities tab then uncheck the auto signing, make sure to select the right bundle indentifier, the right provisioning profile which should be popuplated and the right team.
+**important** then switch to the signing & capabilities tab then uncheck the auto signing, make sure to select the right bundle indentifier, the right provisioning profile which should be popuplated and the right team.
 
 ![signing](./screenshots/signing.png)
 
@@ -884,6 +884,9 @@ PLATFORMS
   x86_64-darwin-20
 ```
 
+One thing you will notice is there are two more env variable required by Fastlane `MATCH_PASSWORD` and `MATCH_KEYCHAIN_PASSWORD`. They are used as 
+an additional layer of security: each of the files will be encrypted using openssl. They can be any string value.
+
 then lets push to github.
 
 Voila!!!
@@ -917,7 +920,7 @@ Voila!!!
 [12:14:30]: fastlane.tools just saved you 9 minutes! 🎉
 ```
 
-see the build number 4.
+see the build number 4
 
 ![newbuild](./screenshots/newbuild.png)
 
