@@ -917,7 +917,7 @@ Voila!!!
 [12:14:30]: fastlane.tools just saved you 9 minutes! 🎉
 ```
 
-see the build number 4 
+see the build number 4.
 
 ![newbuild](./screenshots/newbuild.png)
 
