@@ -5,57 +5,57 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000272">
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000264">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: delete_keychain" time="0.017894">
+      <testcase classname="fastlane.lanes" name="01: delete_keychain" time="0.019025">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="02: create_keychain" time="0.055197">
+      <testcase classname="fastlane.lanes" name="02: create_keychain" time="0.067344">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="03: app_store_connect_api_key" time="0.002285">
+      <testcase classname="fastlane.lanes" name="03: app_store_connect_api_key" time="0.0027">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="04: match" time="0.81557">
+      <testcase classname="fastlane.lanes" name="04: match" time="0.861244">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="05: sync_code_signing" time="1.984033">
+      <testcase classname="fastlane.lanes" name="05: sync_code_signing" time="1.910964">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="06: update_code_signing_settings" time="0.036523">
+      <testcase classname="fastlane.lanes" name="06: update_code_signing_settings" time="0.033688">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="07: increment_build_number" time="1.4966">
+      <testcase classname="fastlane.lanes" name="07: increment_build_number" time="1.763654">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="08: build_app" time="33.955716">
+      <testcase classname="fastlane.lanes" name="08: build_app" time="30.216986">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="09: update_code_signing_settings" time="0.013668">
+      <testcase classname="fastlane.lanes" name="09: update_code_signing_settings" time="0.013114">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="10: upload_to_testflight" time="351.998204">
+      <testcase classname="fastlane.lanes" name="10: upload_to_testflight" time="322.582045">
         
       </testcase>
     
