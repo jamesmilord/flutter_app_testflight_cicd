@@ -72,10 +72,10 @@ platform :ios do
     )
     increment_build_number(xcodeproj: "Runner.xcodeproj")
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
-    # update_code_signing_settings(
-    #   use_automatic_signing: true,
-    #   path: "Runner.xcodeproj"
-    # )
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      path: "Runner.xcodeproj"
+    )
     upload_to_testflight
   end
 end
