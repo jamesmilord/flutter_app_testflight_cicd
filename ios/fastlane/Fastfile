@@ -76,7 +76,7 @@ platform :ios do
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
     upload_to_testflight(
       changelog: "#{PULL_REQUEST_URL ? "PR reference url: #{PULL_REQUEST_URL}\n" : ""}Something that is new here",
-      group: ['test-group']
+      groups: ['test-group']
     )
   end
 end
