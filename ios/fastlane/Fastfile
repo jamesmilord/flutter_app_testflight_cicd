@@ -22,6 +22,7 @@ APPLE_ISSUER_ID = ENV["APPLE_ISSUER_ID"]
 APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
 APP_IDENTIFIER = ENV["APP_IDENTIFIER"]
 GIT_AUTHORIZATION = ENV["GIT_AUTHORIZATION"]
+PULL_REQUEST_URL = ENV["PULL_REQUEST_URL"]
 
 def delete_temp_keychain(name)
   delete_keychain(
@@ -73,6 +74,9 @@ platform :ios do
     current_build_number = app_store_build_number(live: false)
     increment_build_number(xcodeproj: "Runner.xcodeproj", build_number: current_build_number + 1)
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
-    upload_to_testflight
+    changelog = "#{PULL_REQUEST_URL ? "PR reference url: #{PULL_REQUEST_URL}\n" : ""}Something that is new here"
+    upload_to_testflight(
+      changelog: changelog
+    )
   end
 end
