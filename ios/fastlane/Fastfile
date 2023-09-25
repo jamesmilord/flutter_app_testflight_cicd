@@ -74,9 +74,8 @@ platform :ios do
     current_build_number = app_store_build_number(live: false)
     increment_build_number(xcodeproj: "Runner.xcodeproj", build_number: current_build_number + 1)
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
-    changelog = "#{PULL_REQUEST_URL ? "PR reference url: #{PULL_REQUEST_URL}\n" : ""}Something that is new here"
     upload_to_testflight(
-      changelog: changelog
+      changelog: "#{PULL_REQUEST_URL ? "PR reference url: #{PULL_REQUEST_URL}\n" : ""}Something that is new here"
     )
   end
 end
