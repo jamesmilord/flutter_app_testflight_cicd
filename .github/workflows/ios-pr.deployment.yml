@@ -26,7 +26,7 @@ jobs:
       - run: flutter clean
       - run: flutter pub get
 
-      # Assign a unique build identifier using PR number.
+      # Assign a unique build identifier using PR number
       - name: Assign Build Identifier
         run: echo "BUILD_IDENTIFIER=$(date '+%Y%m%d%H%M%S')-PR${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
