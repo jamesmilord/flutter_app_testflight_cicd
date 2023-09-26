@@ -30,6 +30,10 @@ jobs:
           # Set the extracted content in an environment variable with "\n" separator
           # echo "WHAT_TO_TEST=${WHAT_TO_TEST}" >> $GITHUB_ENV
 
+          echo "WHAT_TO_TEST<<EOF" >> $GITHUB_ENV
+          echo "$WHAT_TO_TEST" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Display WHAT_TO_TEST Content
         run: |
           echo "Extracted 'What to Test': ${{ env.WHAT_TO_TEST }}"
