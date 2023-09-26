@@ -28,7 +28,7 @@ jobs:
 
       # Assign a unique build identifier using PR number
       - name: Assign Build Identifier
-        run: echo "BUILD_IDENTIFIER=${{ github.event.pull_request.id }}" >> $GITHUB_ENV
+        run: echo "BUILD_IDENTIFIER=$(date '+%Y%m%d%H%M%S')-PR${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - run: flutter build ios --release --no-codesign --no-tree-shake-icons --build-name=$BUILD_IDENTIFIER --build-number=$BUILD_IDENTIFIER
 
