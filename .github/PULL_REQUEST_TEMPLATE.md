@@ -12,6 +12,7 @@
 
 <replace this with your assessment of the overall risk and impact of the changes to production>
 
-### What to Test
+### What is new
 
-- [ ] Example of what to test for.
+- [ ] Feature 1.
+- [ ] Bug fix 1.

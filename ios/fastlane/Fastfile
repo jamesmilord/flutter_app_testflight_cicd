@@ -24,6 +24,7 @@ APP_IDENTIFIER = ENV["APP_IDENTIFIER"]
 GIT_AUTHORIZATION = ENV["GIT_AUTHORIZATION"]
 PULL_REQUEST_URL = ENV["PULL_REQUEST_URL"]
 PULL_REQUEST_BRANCH_NAME = ENV["PULL_REQUEST_BRANCH_NAME"]
+WHATS_NEW = ENV["WHATS_NEW"]
 
 def delete_temp_keychain(name)
   delete_keychain(
@@ -78,7 +79,7 @@ platform :ios do
     upload_to_testflight(
       localized_build_info: {
         "en-US": {
-          whats_new: "#{PULL_REQUEST_URL ? "PR reference url: #{PULL_REQUEST_URL}\nPR branch name: #{PULL_REQUEST_BRANCH_NAME}\n" : ""}Something that is new here",
+          whats_new: "#{PULL_REQUEST_URL ? "PR reference url: #{PULL_REQUEST_URL}\nPR branch name: #{PULL_REQUEST_BRANCH_NAME}\n" : ""}#{WHATS_NEW ? WHATS_NEW : ""}",
         }
       }
     )
