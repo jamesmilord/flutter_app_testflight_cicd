@@ -26,7 +26,7 @@ jobs:
           echo "$PR_DESCRIPTION"
 
           # Extract "What to Test" bullet points using regular expressions
-          WHAT_TO_TEST=$(echo "$PR_DESCRIPTION" | grep -oP '(?<=### What to Test\n)(.*?)(?=\n###|$)' | sed '/^\s*$/d' | sed 's/^- \[ \] //')
+          WHAT_TO_TEST=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What to Test' | sed '/### What to Test/d' | sed '/^\s*$/d' | sed 's/^- \[ \] //')
 
           # Set the extracted content in an environment variable with "\n" separator
           echo "WHAT_TO_TEST=${WHAT_TO_TEST}" >> $GITHUB_ENV
