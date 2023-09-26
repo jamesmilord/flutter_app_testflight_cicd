@@ -11,9 +11,31 @@ jobs:
     runs-on: macOS-latest
     steps:
       - name: Checkout code from ref
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+
+      - name: Get the PR description
+        run: |
+          # Get the PR description using GitHub API
+          PR_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                           -H "Accept: application/vnd.github.v3+json" \
+                           "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+                         | jq -r '.body')
+
+
+          # Extract "What is New" bullet points using regular expressions
+          WHATS_NEW=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What is New' | sed -n '/### What is New/,$p' | sed '/###/d' | sed '/^[[:space:]]*-[[:space:]]*\[[ x]\]/!d; s/^[[:space:]]*-[[:space:]]*\[[ x]\]//')
+
+          # Set the extracted content in an environment variable with "\n" separator
+
+          echo "WHATS_NEW<<EOF" >> $GITHUB_ENV
+          echo "$WHATS_NEW" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Display WHATS_NEW Content
+        run: |
+          echo "Extracted 'What to Test': ${{ env.WHATS_NEW }}"
 
       - uses: webfactory/ssh-agent@v0.7.0
         with:
@@ -26,9 +48,9 @@ jobs:
       - run: flutter clean
       - run: flutter pub get
 
-      # Assign a unique build identifier using PR number
+      # Assign a unique build identifier using PR number.
       - name: Assign Build Identifier
-        run: echo "BUILD_IDENTIFIER=$(date '+%Y%m%d%H%M%S')-PR${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+        run: echo "BUILD_IDENTIFIER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - run: flutter build ios --release --no-codesign --no-tree-shake-icons --build-name=$BUILD_IDENTIFIER --build-number=$BUILD_IDENTIFIER
 
@@ -59,3 +81,6 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           BUILD_IDENTIFIER: ${{ env.BUILD_IDENTIFIER }} # Pass the build identifier to Fastlane
+          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+          PULL_REQUEST_BRANCH_NAME: ${{ github.head_ref }}
+          WHATS_NEW: ${{ env.WHATS_NEW }}
