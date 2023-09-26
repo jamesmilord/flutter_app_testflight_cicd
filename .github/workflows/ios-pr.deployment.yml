@@ -28,7 +28,7 @@ jobs:
           WHAT_TO_TEST=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What to Test' | sed -n '/### What to Test/,$p' | sed '/###/d' | sed '/^[[:space:]]*-[[:space:]]*\[[ x]\]/!d; s/^[[:space:]]*-[[:space:]]*\[[ x]\]//')
 
           # Set the extracted content in an environment variable with "\n" separator
-          echo "WHAT_TO_TEST=${WHAT_TO_TEST}" >> $GITHUB_ENV
+          # echo "WHAT_TO_TEST=${WHAT_TO_TEST}" >> $GITHUB_ENV
 
       - name: Display WHAT_TO_TEST Content
         run: |
