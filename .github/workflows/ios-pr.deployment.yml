@@ -23,7 +23,6 @@ jobs:
                            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
                          | jq -r '.body')
 
-          echo "$PR_DESCRIPTION"
 
           # Extract "What to Test" bullet points using regular expressions
           WHAT_TO_TEST=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What to Test' | sed '/### What to Test/d' | sed '/^\s*$/d' | sed 's/^- \[ \] //')
